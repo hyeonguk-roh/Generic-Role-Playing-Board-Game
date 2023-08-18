@@ -2,35 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum GameState { START, P1, P2, P3, P4, GAMEOVER }
-
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private Transform board;
-    [SerializeField] private GameState state;
+    [SerializeField] private Transform board;               //get the board transform
+    [SerializeField] private List<Transform> playerList;    //create a List<T> of players to determine order of positions
+    [SerializeField] private GameObject[] playerListArray;  //create an array of player gameobjects
 
-    private int numPlayers = 1;
-    private GameObject[] playerList;
+    public int playerCount = 0; //number of players
 
-    void Start()
+    //Sets up the board by placing player entities at the start
+    public void SetupBoard()
     {
-        //numPlayers = PlayerPrefs.GetInt("Players");
-        state = GameState.START;
-        SetupBoard();
-    }
-
-    void Update()
-    {
-    }
-
-    void SetupBoard()
-    {
-        playerList = new GameObject[numPlayers];
-        for (int i = 0; i < numPlayers; i++)
+        playerList = new();
+        playerListArray = GameObject.FindGameObjectsWithTag("Player");
+        for (int i = 0; i < playerCount; i++)
         {
-            playerList[i] = this.transform.GetChild(i).gameObject;
-            playerList[i].SetActive(true);
-            this.transform.GetChild(i).transform.position = board.GetChild(0).GetChild(0).GetChild(i).position;
+            playerList.Add(playerListArray[i].transform);
+            playerList[i].position = board.GetChild(0).GetChild(0).GetChild(i).position;
+            Debug.Log("Set Up the Board");
+            Debug.Log(playerList);
         }
     }
 }

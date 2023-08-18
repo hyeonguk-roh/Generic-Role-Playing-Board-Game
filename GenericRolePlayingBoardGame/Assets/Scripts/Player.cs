@@ -2,48 +2,85 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
+using Unity.Netcode;
 
 using TMPro;
 
-public class Player : MonoBehaviour
+public class Player : NetworkBehaviour
 {
-    [SerializeField] private Transform board;
-    private Transform[] tiles = new Transform[44];
-    private int currentTile;
-    private TileScript tileScript;
+    [SerializeField] private Transform board;                           //get board transform to find children objects
+    [SerializeField] private Transform[] tiles = new Transform[44];     //list of all the tiles in order
+    private int currentTile = 0;                                            //the current tile the player is on
+    private TileScript tileScript;                                      //access to the tile's script
 
-    [SerializeField] private RawImage dice1;
-    [SerializeField] private RawImage dice2;
+    [SerializeField] private RawImage dice1;    //dice roller 1
+    [SerializeField] private RawImage dice2;    //dice roller 2
 
-    [SerializeField] private Texture oneDice;
-    [SerializeField] private Texture twoDice;
-    [SerializeField] private Texture threeDice;
-    [SerializeField] private Texture fourDice;
-    [SerializeField] private Texture fiveDice;
-    [SerializeField] private Texture sixDice;
+    [SerializeField] private Texture oneDice;   //sprite for 1 dot
+    [SerializeField] private Texture twoDice;   //sprite for 2 dot
+    [SerializeField] private Texture threeDice; //sprite for 3 dot
+    [SerializeField] private Texture fourDice;  //sprite for 4 dot
+    [SerializeField] private Texture fiveDice;  //sprite for 5 dot
+    [SerializeField] private Texture sixDice;   //sprite for 6 dot
 
-    public bool isTurn;
-    public bool isStopped = true;
-    private int rollNumber1;
-    private int rollNumber2;
-    private int totalRoll;
+    [SerializeField] private Button rollButton; //access to the roll button
 
-    [SerializeField] private TMP_Text monyText;
-    public int mony = 1500000;
+    public bool isTurn;             //is it this player's turn?
+    public bool isStopped = true;   //has the player stopped moving?
+    private int rollNumber1;        //number on first dice
+    private int rollNumber2;        //number on second dice
+    private int totalRoll;          //total sum of both dice
 
-    void Start()
+    [SerializeField] private TMP_Text monyText;     //displays amount of mony
+    public int mony = 1500000;                      //amount of mony
+
+    /*
+    =====================================================================
+    ||                  ON CREATION OF PLAYER ENTITY                   ||
+    =====================================================================
+    */
+    void Awake()
     {
-        for (int i = 0; i < tiles.Length; i++)
+        board = GameObject.Find("Board").transform.GetChild(0);
+        for (int i = 0; i < tiles.Length; i++) //fills an array with all tiles in the game starting from index 0
         {
             tiles[i] = board.GetChild(i);
         }
-        currentTile = 0;
+        currentTile = 0; //starting tile
+
+        dice1 = GameObject.FindObjectOfType<Canvas>().transform.GetChild(0).GetChild(1).gameObject.GetComponent<RawImage>(); 
+        dice2 = GameObject.FindObjectOfType<Canvas>().transform.GetChild(0).GetChild(2).gameObject.GetComponent<RawImage>();
+        monyText = GameObject.FindObjectOfType<Canvas>().transform.GetChild(0).GetChild(3).gameObject.GetComponent<TMP_Text>();
+
+        rollButton = GameObject.FindObjectOfType<Canvas>().transform.GetChild(0).GetChild(0).gameObject.GetComponent<Button>();
+        rollButton.onClick.AddListener(TakeTurn);
+
+        StartCoroutine(BoardSetup());
     }
 
+    IEnumerator BoardSetup()
+    {
+        yield return new WaitForSeconds(0.1f);
+        this.transform.position = tiles[0].position;
+        TakeTurn();
+    }
+
+    /*
+    =====================================================================
+    ||                           EVERY FRAME                           ||
+    =====================================================================
+    */
     void Update()
     {
         monyText.text = mony.ToString() + " mony";
     }
+
+    /*
+    =====================================================================
+    ||                         TAKE YOUR TURN                          ||
+    =====================================================================
+    */
 
     public void TakeTurn()
     {
@@ -53,6 +90,7 @@ public class Player : MonoBehaviour
 
     IEnumerator RollDice()
     {
+        isStopped = false;
         for (int i = 0; i < 10; i++)
         {
             yield return new WaitForSeconds(0.1f);
@@ -114,11 +152,10 @@ public class Player : MonoBehaviour
 
     IEnumerator MoveAcrossBoard()
     {
-        isStopped = false;
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
         for (int i = 0; i < totalRoll; i++)
         {
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.3f);
             if (currentTile != 43)
             {
                 this.transform.position = tiles[currentTile + 1].position;
@@ -132,16 +169,39 @@ public class Player : MonoBehaviour
                 currentTile = 0;
             }
         }
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0.1f);
         isStopped = true;
     }
 
+    /*
+    =====================================================================
+    ||                  ON ENTERING A TRIGGER COLLIDER                 ||
+    =====================================================================
+    */
     void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Tile")
         {
             tileScript = other.gameObject.GetComponent<TileScript>();
             Debug.Log("Entered trigger");
+        }
+        if (other.tag == "Unstable Investment")
+        {
+        }
+        if (other.tag == "Breaking News")
+        {
+        }
+        if (other.tag == "Level Up")
+        {
+        }
+        if (other.tag == "Go 2 Jail")
+        {
+        }
+        if (other.tag == "Gigafactory")
+        {
+        }
+        if (other.tag == "Public Transportation")
+        {
         }
     }
 }

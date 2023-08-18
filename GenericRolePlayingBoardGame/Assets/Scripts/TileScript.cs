@@ -33,15 +33,21 @@ public class TileScript : MonoBehaviour
     }
     void Update()
     {
-        this.transform.GetChild(0).GetChild(0).gameObject.GetComponent<TMP_Text>().text = tileName;
-        this.transform.GetChild(0).GetChild(1).gameObject.GetComponent<TMP_Text>().text = cost.ToString() + " mony";
-        this.GetComponent<MeshRenderer>().material = color;
+        if (this.tag == "Tile") {
+            this.transform.GetChild(0).GetChild(0).gameObject.GetComponent<TMP_Text>().text = tileName;
+            this.transform.GetChild(0).GetChild(1).gameObject.GetComponent<TMP_Text>().text = cost.ToString() + " mony";
+            this.GetComponent<MeshRenderer>().material = color;
+        }
 
         for (int i = 0; i < players.Count; i++)
         {
             if (players[i].GetComponent<Player>().isStopped == true)
             {
-                players[i].position = this.transform.GetChild(i + 1).position;
+                if (this.tag == "Tile") {
+                    players[i].position = this.transform.GetChild(i + 1).position;
+                } else {
+                    players[i].position = this.transform.GetChild(i).position;
+                }
             }
         }
     }

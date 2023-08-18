@@ -3,7 +3,14 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Level Up
+  - Tile
+  - Unstable Investment
+  - Breaking News
+  - Go 2 Jail
+  - Gigafactory
+  - Public Transportation
   layers:
   - Default
   - TransparentFX
