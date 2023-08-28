@@ -49,12 +49,16 @@ public class Player : NetworkBehaviour
         }
         currentTile = 0; //starting tile
 
-        dice1 = GameObject.FindObjectOfType<Canvas>().transform.GetChild(0).GetChild(1).gameObject.GetComponent<RawImage>(); 
-        dice2 = GameObject.FindObjectOfType<Canvas>().transform.GetChild(0).GetChild(2).gameObject.GetComponent<RawImage>();
-        monyText = GameObject.FindObjectOfType<Canvas>().transform.GetChild(0).GetChild(3).gameObject.GetComponent<TMP_Text>();
+        dice1 = this.transform.parent.GetChild(1).GetChild(0).GetChild(1).gameObject.GetComponent<RawImage>(); 
+        dice2 = this.transform.parent.GetChild(1).GetChild(0).GetChild(2).gameObject.GetComponent<RawImage>();
+        monyText = this.transform.parent.GetChild(1).GetChild(0).GetChild(3).gameObject.GetComponent<TMP_Text>();
 
-        rollButton = GameObject.FindObjectOfType<Canvas>().transform.GetChild(0).GetChild(0).gameObject.GetComponent<Button>();
+        rollButton = this.transform.parent.GetChild(1).GetChild(0).GetChild(0).gameObject.GetComponent<Button>();
         rollButton.onClick.AddListener(TakeTurn);
+
+        if (IsLocalPlayer) {
+            this.transform.parent.GetChild(1).gameObject.SetActive(false);
+        }
 
         StartCoroutine(BoardSetup());
     }
@@ -91,6 +95,7 @@ public class Player : NetworkBehaviour
     IEnumerator RollDice()
     {
         isStopped = false;
+        Debug.Log(this.transform.parent.gameObject + " is rolling");
         for (int i = 0; i < 10; i++)
         {
             yield return new WaitForSeconds(0.1f);
@@ -152,6 +157,7 @@ public class Player : NetworkBehaviour
 
     IEnumerator MoveAcrossBoard()
     {
+        Debug.Log(this.transform.parent.gameObject + " is moving");
         yield return new WaitForSeconds(1);
         for (int i = 0; i < totalRoll; i++)
         {

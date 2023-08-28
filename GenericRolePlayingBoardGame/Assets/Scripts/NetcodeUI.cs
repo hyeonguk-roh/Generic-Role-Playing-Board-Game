@@ -14,11 +14,13 @@ public class NetcodeUI : MonoBehaviour
         startHost.onClick.AddListener(() => {
             NetworkManager.Singleton.StartHost();
             gameObject.SetActive(false);
+
         });
 
         startClient.onClick.AddListener(() => {
             NetworkManager.Singleton.StartClient();
             gameObject.SetActive(false);
+
         });
     }
 }
